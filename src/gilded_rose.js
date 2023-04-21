@@ -4,6 +4,34 @@ class Item {
     this.sellIn = sellIn;
     this.quality = quality;
   }
+  updateQuality() {
+    if (this.name.quality <= 0) {
+      return;
+    }
+    this.decreaseQuality(this.name);
+    this.decreaseSellIn(this.name);
+    if (this.name.sellIn < 0) {
+      this.decreaseQuality(this.name);
+    }
+  }
+
+  increaseQuality(item, num = 1) {
+    const limit = 50
+    if (item.quality + num < limit) {
+      item.quality += num;
+    }
+    else {
+      item.quality = limit
+    }
+  }
+
+  decreaseQuality(item, num = 1) {
+    item.quality -= num;
+  }
+
+  decreaseSellIn(item, num = 1) {
+    item.sellIn -= num;
+  }
 }
 
 class Shop {
@@ -15,79 +43,81 @@ class Shop {
     this.items.forEach((item) => {
       switch (item.name) {
         case "Sulfuras, Hand of Ragnaros":
+          new Sulfuras(item).updateQuality()
           break;
         case "Backstage passes to a TAFKAL80ETC concert":
-          this.updateBackstagePasses(item);
+          new BackstagePass(item).updateQuality()
           break;
         case "Aged Brie":
-          this.updateBrie(item);
+          new Brie(item).updateQuality()
           break;
         case "Conjured Mana Cake":
-          this.updateConjuredItem(item);
+          new Conjured(item).updateQuality()
           break;
         default:
-          this.updateNormalItem(item);
+          new Item(item).updateQuality()
           break;
       }
     });
     return this.items;
   }
+}
 
-  increaseQuality(item, num = 1) {
-    item.quality += num;
+class Sulfuras extends Item{ 
+  constructor(item) {
+    super(item)
+    this.item = item
+  } 
+  updateQuality() {
+    return this.item;
+  } 
+}
+
+class BackstagePass extends Item { 
+  constructor(item) {
+    super(item)
+    this.item = item
+  } 
+  updateQuality() {
+    super.increaseQuality(this.item)
+    if (this.item.sellIn < 11) {
+      super.increaseQuality(this.item)
+    }
+    if (this.item.sellIn < 6) {
+      super.increaseQuality(this.item)
+    }
+    super.decreaseSellIn(this.item);
+    if (this.item.sellIn < 0) {
+      this.item.quality = 0;
+    }
+  } 
+}
+
+class Brie extends Item {
+  constructor(item) {
+    super(item)
+    this.item = item
   }
-
-  decreaseQuality(item, num = 1) {
-    item.quality -= num;
-  }
-
-  decreaseSellIn(item, num = 1) {
-    item.sellIn -= num;
-  }
-
-  updateBackstagePasses(item) {
-    let quality = item.quality;
-    quality++;
-
-    if (item.sellIn < 11) {
-      quality++;
+  updateQuality() {
+    if (this.item.quality < 50) {
+      super.increaseQuality(this.item);
     }
-    if (item.sellIn < 6) {
-      quality++;
-    }
-    item.quality = quality > 50 ? 50 : quality;
-
-    this.decreaseSellIn(item);
-    if (item.sellIn < 0) {
-      item.quality -= item.quality;
-    }
-  }
-
-  updateBrie(item) {
-    if (item.quality < 50) {
-      this.increaseQuality(item);
-    }
-    this.decreaseSellIn(item);
-    if (item.sellIn < 0 && item.quality > 0) {
-      this.decreaseQuality(item);
-    }
-  }
-
-  updateNormalItem(item) {
-    if (item.quality <= 0) {
-      return;
-    }
-    this.decreaseQuality(item);
-    this.decreaseSellIn(item);
-    if (item.sellIn < 0) {
-      this.decreaseQuality(item);
+    super.decreaseSellIn(this.item);
+    if (this.item.sellIn < 0 && this.item.quality > 0) {
+      super.decreaseQuality(this.item);
     }
   }
+}
 
-  updateConjuredItem(item) {
-    if (item.quality > 0) {
-      this.decreaseQuality(item, 2);
-      this.decreaseSellIn(item);
+class Conjured extends Item {
+  constructor(item) {
+    super(item)
+    this.item = item
+  }
+  updateQuality() {
+    if (this.item.quality > 0) {
+      super.decreaseQuality(this.item, 2);
+      super.decreaseSellIn(this.item);
     }
   }
 }
@@ -96,14 +126,3 @@ module.exports = {
   Item,
   Shop,
 };
-
-// if (item.quality < 50) {
-//   this.increaseQuality(item);
-
-//   if (item.sellIn < 11 && item.quality < 50) {
-//     this.increaseQuality(item);
-//   }
-//   if (item.sellIn < 6 && item.quality < 50) {
-//     this.increaseQuality(item);
-//   }
-// }
