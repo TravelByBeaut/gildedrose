@@ -4,34 +4,6 @@ class Item {
     this.sellIn = sellIn;
     this.quality = quality;
   }
-  updateQuality() {
-    if (this.name.quality <= 0) {
-      return;
-    }
-    this.decreaseQuality(this.name);
-    this.decreaseSellIn(this.name);
-    if (this.name.sellIn < 0) {
-      this.decreaseQuality(this.name);
-    }
-  }
-
-  increaseQuality(item, num = 1) {
-    const limit = 50
-    if (item.quality + num < limit) {
-      item.quality += num;
-    }
-    else {
-      item.quality = limit
-    }
-  }
-
-  decreaseQuality(item, num = 1) {
-    item.quality -= num;
-  }
-
-  decreaseSellIn(item, num = 1) {
-    item.sellIn -= num;
-  }
 }
 
 class Shop {
@@ -41,88 +13,143 @@ class Shop {
 
   updateQuality() {
     this.items.forEach((item) => {
-      switch (item.name) {
-        case "Sulfuras, Hand of Ragnaros":
-          new Sulfuras(item).updateQuality()
-          break;
-        case "Backstage passes to a TAFKAL80ETC concert":
-          new BackstagePass(item).updateQuality()
-          break;
-        case "Aged Brie":
-          new Brie(item).updateQuality()
-          break;
-        case "Conjured Mana Cake":
-          new Conjured(item).updateQuality()
-          break;
-        default:
-          new Item(item).updateQuality()
-          break;
-      }
+      item.updateQuality()
     });
     return this.items;
   }
 }
 
-class Sulfuras extends Item{ 
-  constructor(item) {
-    super(item)
-    this.item = item
+class Sulfuras{ 
+  constructor(name, sellIn, quality) {
+    this.name = name;
+    this.sellIn = sellIn;
+    this.quality = quality;
   } 
   updateQuality() {
-    return this.item;
-  } 
-}
-
-class BackstagePass extends Item { 
-  constructor(item) {
-    super(item)
-    this.item = item
-  } 
-  updateQuality() {
-    super.increaseQuality(this.item)
-    if (this.item.sellIn < 11) {
-      super.increaseQuality(this.item)
-    }
-    if (this.item.sellIn < 6) {
-      super.increaseQuality(this.item)
-    }
-    super.decreaseSellIn(this.item);
-    if (this.item.sellIn < 0) {
-      this.item.quality = 0;
-    }
+    return;
   } 
 }
 
-class Brie extends Item {
-  constructor(item) {
-    super(item)
-    this.item = item
+class BackstagePass { 
+  constructor(name, sellIn, quality) {
+    this.name = name;
+    this.sellIn = sellIn;
+    this.quality = quality;
   }
   updateQuality() {
-    if (this.item.quality < 50) {
-      super.increaseQuality(this.item);
+    this.increaseQuality(this.quality)
+    if (this.sellIn < 11) {
+      this.increaseQuality(this.quality)
     }
-    super.decreaseSellIn(this.item);
-    if (this.item.sellIn < 0 && this.item.quality > 0) {
-      super.decreaseQuality(this.item);
+    if (this.sellIn < 6) {
+      this.increaseQuality(this.quality)
     }
+    this.decreaseSellIn(this.sellIn);
+    if (this.sellIn < 0) {
+      this.quality = 0;
+    }
+  }
+  increaseQuality(quality, num = 1) {
+    const limit = 50
+    if (this.quality + num < limit) {
+     this.quality += num;
+    }
+    else {
+      this.quality = limit
+    }
+  } 
+  decreaseSellIn(sellIn, num = 1) {
+    this.sellIn -= num;
   }
 }
 
-class Conjured extends Item {
-  constructor(item) {
-    super(item)
-    this.item = item
+class Brie {
+  constructor(name, sellIn, quality) {
+    this.name = name;
+    this.sellIn = sellIn;
+    this.quality = quality;
   }
   updateQuality() {
-    if (this.item.quality > 0) {
-      super.decreaseQuality(this.item, 2);
-      super.decreaseSellIn(this.item);
+    if (this.quality < 50) {
+      this.increaseQuality(this.quality);
     }
+    this.decreaseSellIn(this.sellIn);
+    if (this.sellIn < 0 && this.quality > 0) {
+      this.decreaseQuality(this.quality);
+    }
+  }
+
+  increaseQuality(quality, num = 1) {
+    this.quality += num;
+  }
+
+  decreaseQuality(quality, num = 1) {
+    this.quality -= num;
+  }
+
+  decreaseSellIn(sellIn, num = 1) {
+    this.sellIn -= num;
+  }
+}
+
+class Conjured {
+  constructor(name, sellIn, quality) {
+    this.name = name;
+    this.sellIn = sellIn;
+    this.quality = quality;
+  }
+  updateQuality() {
+    if (this.quality > 0) {
+      this.decreaseQuality(this.quality, 2);
+      this.decreaseSellIn(this.sellIn);
+    }
+  }
+
+  decreaseQuality(quality, num = 1) {
+    this.quality -= num;
+  }
+
+  decreaseSellIn(sellIn, num = 1) {
+    this.sellIn -= num;
+  }
+}
+
+class Normal {
+  constructor(name, sellIn, quality) {
+    this.name = name;
+    this.sellIn = sellIn;
+    this.quality = quality;
+  }
+  updateQuality() {
+    if (this.quality <= 0) {
+      return;
+    }
+    this.decreaseQuality(this.quality);
+    this.decreaseSellIn(this.sellIn);
+    if (this.sellIn < 0) {
+      this.decreaseQuality(this.quality);
+    }
+  }
+
+  increaseQuality(quality, num = 1) {
+    this.quality += num;
+  }
+
+  decreaseQuality(quality, num = 1) {
+    this.quality -= num;
+  }
+
+  decreaseSellIn(sellIn, num = 1) {
+    this.sellIn -= num;
   }
 }
 
 module.exports = {
   Item,
   Shop,
+  Sulfuras,
+  BackstagePass,
+  Brie,
+  Conjured,
+  Normal
 };
