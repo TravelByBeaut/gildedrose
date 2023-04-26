@@ -1,4 +1,10 @@
-const { Shop, Item, Sulfuras, BackstagePass, Brie, Conjured, Normal } = require("../src/gilded_rose");
+const { Shop } = require("../src/gilded_rose");
+const {Sulfuras} = require("../src/Sulfuras")
+const {BackstagePass} = require("../src/BackstagePass")
+const {Normal} = require("../src/Normal")
+const {Brie} = require("../src/Brie")
+const {Conjured} = require("../src/Conjured")
+
 
 describe("Quality check", function () {
   it("Quality of Sulfuras doesn't change", function () {
@@ -34,6 +40,11 @@ describe("Quality check", function () {
     const shop = new Shop([new Conjured("Conjured Mana Cake", 3, 6)]);
     const items = shop.updateQuality();
     expect(items[0].quality).toBe(4);
+  });
+  it("Brie items increase in quality twice as fast after sellIn", function () {
+    const shop = new Shop([new Brie("Aged Brie", -1, 1)]);
+    const items = shop.updateQuality();
+    expect(items[0].quality).toBe(3);
   });
 });
 describe("Backstage passes", function () {
